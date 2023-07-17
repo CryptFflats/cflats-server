@@ -1,12 +1,14 @@
 import {Body, Controller, Get, HttpCode, Param, Post, Put, UsePipes, ValidationPipe} from '@nestjs/common';
 import {WhiteListService} from "./white-list.service";
 import {WhiteListDto} from "./dto/WhiteList.dto";
+import {Auth} from "../auth/decorators/auth.decorator";
 
 @Controller('white-list')
 export class WhiteListController {
   constructor(private readonly WhiteListService: WhiteListService) {
   }
 
+  @Auth()
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post()
@@ -14,6 +16,7 @@ export class WhiteListController {
     return await this.WhiteListService.createWhiteList(dto)
   }
 
+  @Auth()
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Put()
