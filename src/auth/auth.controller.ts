@@ -9,11 +9,13 @@ import {
 import { AuthService } from "./auth.service"
 import { AuthDto } from "./dto/auth.dto"
 import { RefreshTokenDto } from "./dto/refreshToken.dto"
+import {Auth} from "./decorators/auth.decorator";
 
 @Controller("auth")
 export class AuthController {
   constructor(private readonly AuthService: AuthService) {}
 
+  @Auth()
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post("register")
