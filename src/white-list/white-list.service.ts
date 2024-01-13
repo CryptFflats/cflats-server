@@ -25,9 +25,9 @@ export class WhiteListService {
       throw new HttpException('White List Not Found', HttpStatus.NOT_FOUND);
     }
 
-    await whiteList.addresses.push(...addresses);
+    whiteList.addresses.push(...addresses);
 
-    return await whiteList.save();
+    return whiteList.save();
   }
 
   getWhiteList = async (name: string, type: string) => {

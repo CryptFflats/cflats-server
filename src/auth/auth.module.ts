@@ -8,7 +8,7 @@ import { JwtModule } from "@nestjs/jwt"
 
 import { JwtStrategy } from "./strategies/jwt.strategy"
 import {AdminModel} from "../admin/admin.model";
-import {getJWTConfig} from "../config/jwt.config";
+import {getJWTConfig} from "../common/config/jwt.config";
 
 @Module({
   controllers: [AuthController],
