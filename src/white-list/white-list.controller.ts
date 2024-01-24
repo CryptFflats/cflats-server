@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpCode, Param, Post, Put, Res, UsePipes, ValidationPipe} from '@nestjs/common';
+import {Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Res, UsePipes, ValidationPipe} from '@nestjs/common';
 import {WhiteListService} from "./white-list.service";
 import {WhiteListDto} from "./dto/WhiteList.dto";
 import {Auth} from "../auth/decorators/auth.decorator";
@@ -31,6 +31,13 @@ export class WhiteListController {
   @Get(':name/:type')
   async getWhiteList(@Param('name') name: string, @Param('type') type: string) {
    return await this.WhiteListService.getWhiteList(name, type);
+  }
+
+  @HttpCode(200)
+  @Auth()
+  @Delete(':name/:type/:address')
+  async deleteAddressFromWhiteList(@Param('name') name: string, @Param('type') type: string, @Param('address') address: string) {
+    return await this.WhiteListService.deleteAddressFromWhiteList(name, type, address);
   }
 
   @HttpCode(200)

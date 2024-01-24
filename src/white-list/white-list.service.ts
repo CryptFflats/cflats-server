@@ -12,12 +12,12 @@ export class WhiteListService {
     @InjectModel(WhiteListModel) private readonly WhiteListModel: ModelType<WhiteListModel>
   ) {}
 
-  createWhiteList = async (dto: WhiteListDto) => {
+  public createWhiteList = async (dto: WhiteListDto) => {
     const createdWhiteList = await new this.WhiteListModel(dto);
     return await createdWhiteList.save();
   }
 
-  updateAddresses = async (dto: WhiteListDto) => {
+  public updateAddresses = async (dto: WhiteListDto) => {
     const { name, addresses, type } = dto;
     const whiteList = await this.WhiteListModel.findOne({ name, type });
 
@@ -30,7 +30,7 @@ export class WhiteListService {
     return whiteList.save();
   }
 
-  getWhiteList = async (name: string, type: string) => {
+  public getWhiteList = async (name: string, type: string) => {
     const whiteList = await this.WhiteListModel.findOne({ name, type });
 
     if (!whiteList) {
@@ -38,5 +38,23 @@ export class WhiteListService {
     }
 
     return whiteList;
+  }
+
+  public deleteAddressFromWhiteList = async (name: string, type: string, address: string) => {
+    const whiteList = await this.WhiteListModel.findOne({ name, type });
+
+    if (!whiteList) {
+      throw new HttpException('White List Not Found', HttpStatus.NOT_FOUND);
+    }
+
+    const index = whiteList.addresses.indexOf(address);
+
+    if (index === -1) {
+      throw new BadRequestException('Address Not Found');
+    }
+
+    whiteList.addresses.splice(index, 1);
+
+    return whiteList.save();
   }
 }

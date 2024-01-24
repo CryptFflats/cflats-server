@@ -5,6 +5,8 @@ import { AuthModule } from './auth/auth.module';
 import {getMongoDbConfig} from "./common/config/mongo.config";
 import {TypegooseModule} from "nestjs-typegoose";
 import { WhiteListModule } from './white-list/white-list.module';
+import { SupportModule } from './support/support.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { WhiteListModule } from './white-list/white-list.module';
     }),
     AuthModule,
     AdminModule,
-    WhiteListModule
+    WhiteListModule,
+    SupportModule,
+    MailModule
   ],
 })
 export class AppModule {}
