@@ -1,21 +1,27 @@
-import {BadRequestException, HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {ModelType} from "@typegoose/typegoose/lib/types";
-import {WhiteListDto} from "./dto/WhiteList.dto";
-import {WhiteListModel} from "./white-list.model";
-import {InjectModel} from "nestjs-typegoose";
-import {UpdateWhiteListDto} from "./dto/UpdateWhiteList.dto";
-import {GetWhiteListDto} from "./dto/GetWhiteList.dto";
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
+import { ModelType } from '@typegoose/typegoose/lib/types';
+import { WhiteListDto } from './dto/WhiteList.dto';
+import { WhiteListModel } from './white-list.model';
+import { InjectModel } from 'nestjs-typegoose';
+import { UpdateWhiteListDto } from './dto/UpdateWhiteList.dto';
+import { GetWhiteListDto } from './dto/GetWhiteList.dto';
 
 @Injectable()
 export class WhiteListService {
   constructor(
-    @InjectModel(WhiteListModel) private readonly WhiteListModel: ModelType<WhiteListModel>
+    @InjectModel(WhiteListModel)
+    private readonly WhiteListModel: ModelType<WhiteListModel>,
   ) {}
 
   public createWhiteList = async (dto: WhiteListDto) => {
     const createdWhiteList = await new this.WhiteListModel(dto);
     return await createdWhiteList.save();
-  }
+  };
 
   public updateAddresses = async (dto: WhiteListDto) => {
     const { name, addresses, type } = dto;
@@ -28,7 +34,7 @@ export class WhiteListService {
     whiteList.addresses.push(...addresses);
 
     return whiteList.save();
-  }
+  };
 
   public getWhiteList = async (name: string, type: string) => {
     const whiteList = await this.WhiteListModel.findOne({ name, type });
@@ -38,9 +44,13 @@ export class WhiteListService {
     }
 
     return whiteList;
-  }
+  };
 
-  public deleteAddressFromWhiteList = async (name: string, type: string, address: string) => {
+  public deleteAddressFromWhiteList = async (
+    name: string,
+    type: string,
+    address: string,
+  ) => {
     const whiteList = await this.WhiteListModel.findOne({ name, type });
 
     if (!whiteList) {
@@ -55,6 +65,10 @@ export class WhiteListService {
 
     whiteList.addresses.splice(index, 1);
 
-    return whiteList.save();
-  }
+    await whiteList.save();
+
+    return {
+      message: 'Address deleted successfully',
+    };
+  };
 }

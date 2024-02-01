@@ -3,16 +3,15 @@ import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
-  providers: [
-    MailService,
+  imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.example.com',
+        host: 'mail.hosting.reg.ru',
         port: 587,
         secure: false, // upgrade later with STARTTLS
         auth: {
-          user: 'username',
-          pass: 'password',
+          user: 'contact@cryptoflats.io',
+          pass: 'cryptoflatsParol123',
         },
       },
       defaults: {
@@ -20,5 +19,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       },
     }),
   ],
+  providers: [MailService],
+  exports: [MailService],
 })
 export class MailModule {}
