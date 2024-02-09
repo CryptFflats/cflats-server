@@ -8,15 +8,15 @@ import { MailerModule } from '@nestjs-modules/mailer';
       transport: {
         host: 'mail.hosting.reg.ru',
         port: 587,
-        secure: false, // upgrade later with STARTTLS
+        secure: false,
         auth: {
           user: 'contact@cryptoflats.io',
           pass: 'cryptoflatsParol123',
         },
       },
-      defaults: {
-        from: '"nest-modules" <modules@nestjs.com>',
-      },
+      // defaults: {
+      //   from: '"nest-modules" <modules@nestjs.com>',
+      // },
     }),
   ],
   providers: [MailService],

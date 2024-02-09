@@ -1,15 +1,116 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MailService } from '../mail/mail.service';
+import { CreateTicketDto } from './dto/create-ticket.dto';
+import { ModelType } from '@typegoose/typegoose/lib/types';
+import { TicketModel } from './tickect.model';
+import { InjectModel } from 'nestjs-typegoose';
+import { AnswerTicketDto } from './dto/answer-ticket.dto';
+import { GetTicketsDto } from './dto/get-tickets.dto';
+import { GetTicketDto } from './dto/get-ticket.dto';
 
 @Injectable()
 export class SupportService {
-  constructor(private readonly mailService: MailService) {}
+  constructor(
+    private readonly mailService: MailService,
+    @InjectModel(TicketModel)
+    private readonly ticketModel: ModelType<TicketModel>,
+  ) {}
 
-  async sendMail(): Promise<string> {
-    await this.mailService.answerTicket({
-      to: 'x.tobor.x@gmail.com',
-      answer: 'answer',
+  public async createTicket(dto: CreateTicketDto) {
+    const { name, description, topic, address, email } = dto;
+
+    const count = await this.ticketModel.countDocuments();
+
+    const ticket = new this.ticketModel({
+      name,
+      description,
+      topic,
+      address,
+      email,
+      index: count + 1,
     });
-    return 'success';
+    await ticket.save();
+
+    return {
+      message: 'Ticket created successfully',
+    };
+  }
+
+  public async answerTicket(dto: AnswerTicketDto) {
+    const { id, answer } = dto;
+
+    const ticket = await this.ticketModel.findById(id).exec();
+
+    if (!ticket) {
+      throw new HttpException('Ticket not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (ticket.status) {
+      throw new HttpException(
+        'Ticket already answered',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    ticket.answer = answer;
+    ticket.status = true;
+
+    await this.mailService.sendMail({
+      to: ticket.email,
+      answer,
+      name: ticket.name,
+    });
+
+    await ticket.save();
+
+    return {
+      message: 'Ticket answered successfully',
+    };
+  }
+
+  public async getTickets(dto: GetTicketsDto) {
+    let { page, limit } = dto;
+    page = page || 1;
+    limit = limit || 10;
+    const total = await this.ticketModel.countDocuments();
+    const offset = (page - 1) * limit;
+
+    const tickets = await this.ticketModel
+      .find()
+      .skip(offset)
+      .limit(limit)
+      .sort({ createdAt: -1, status: 1 })
+      .select('index status')
+      .exec();
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrevious = page > 1;
+
+    const data = {
+      info: {
+        totalItems: total,
+        totalPages,
+        hasNext,
+        hasPrevious,
+      },
+      items: tickets,
+    };
+
+    return data;
+  }
+
+  public async getTicket(dto: GetTicketDto) {
+    const { id } = dto;
+    const ticket = await this.ticketModel.findById(id).exec();
+
+    if (!ticket) {
+      throw new HttpException('Ticket not found', HttpStatus.NOT_FOUND);
+    }
+
+    return ticket;
+  }
+
+  public getLastTicket() {
+    return this.ticketModel.findOne().sort({ createdAt: -1 }).exec();
   }
 }

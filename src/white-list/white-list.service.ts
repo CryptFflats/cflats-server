@@ -8,8 +8,6 @@ import { ModelType } from '@typegoose/typegoose/lib/types';
 import { WhiteListDto } from './dto/WhiteList.dto';
 import { WhiteListModel } from './white-list.model';
 import { InjectModel } from 'nestjs-typegoose';
-import { UpdateWhiteListDto } from './dto/UpdateWhiteList.dto';
-import { GetWhiteListDto } from './dto/GetWhiteList.dto';
 
 @Injectable()
 export class WhiteListService {

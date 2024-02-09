@@ -6,11 +6,11 @@ import * as fs from 'fs';
 
 @Injectable()
 export class MailService {
-  private readonly from = 'contact@cryptoflats.io';
+  private readonly from = '"Cryptoflats Support" <contact@cryptoflats.io>';
 
   constructor(private readonly mailerService: MailerService) {}
 
-  public async answerTicket(dto: IAnswerTickerDto): Promise<void> {
+  public async sendMail(dto: IAnswerTickerDto): Promise<void> {
     const htmlPath = path.join(
       __dirname,
       '..',
@@ -18,9 +18,10 @@ export class MailService {
       'templates',
       'dev-index-mail.html',
     );
-    const html = fs.readFileSync(htmlPath, 'utf8');
-
-    console.log(html.replace(/\s/g, ''));
+    const html = fs
+      .readFileSync(htmlPath, 'utf8')
+      .replace('{{name}}', dto.name)
+      .replace('{{answer}}', dto.answer);
 
     return await this.mailerService.sendMail({
       to: dto.to,
