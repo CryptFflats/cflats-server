@@ -17,12 +17,11 @@ export class SupportService {
   ) {}
 
   public async createTicket(dto: CreateTicketDto) {
-    const { name, description, topic, address, email } = dto;
+    const { description, topic, address, email } = dto;
 
     const count = await this.ticketModel.countDocuments();
 
     const ticket = new this.ticketModel({
-      name,
       description,
       topic,
       address,
@@ -58,7 +57,6 @@ export class SupportService {
     await this.mailService.sendMail({
       to: ticket.email,
       answer,
-      name: ticket.name,
     });
 
     await ticket.save();

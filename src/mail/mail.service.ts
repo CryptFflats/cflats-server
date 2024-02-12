@@ -15,12 +15,12 @@ export class MailService {
       __dirname,
       '..',
       '..',
-      'templates',
-      'dev-index-mail.html',
+      'mail-templates',
+      'support',
+      'index.html',
     );
     const html = fs
       .readFileSync(htmlPath, 'utf8')
-      .replace('{{name}}', dto.name)
       .replace('{{answer}}', dto.answer);
 
     return await this.mailerService.sendMail({

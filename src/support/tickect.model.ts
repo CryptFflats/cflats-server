@@ -8,9 +8,6 @@ export class TicketModel extends TimeStamps {
   index: number;
 
   @prop({ required: true, type: String })
-  name: string;
-
-  @prop({ required: true, type: String })
   description: string;
 
   @prop({ required: true, type: String })
