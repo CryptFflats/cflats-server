@@ -7,6 +7,8 @@ import { InjectModel } from 'nestjs-typegoose';
 import { AnswerTicketDto } from './dto/answer-ticket.dto';
 import { GetTicketsDto } from './dto/get-tickets.dto';
 import { GetTicketDto } from './dto/get-ticket.dto';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 @Injectable()
 export class SupportService {
@@ -14,6 +16,7 @@ export class SupportService {
     private readonly mailService: MailService,
     @InjectModel(TicketModel)
     private readonly ticketModel: ModelType<TicketModel>,
+    private configService: ConfigService,
   ) {}
 
   public async createTicket(dto: CreateTicketDto) {
@@ -34,6 +37,8 @@ export class SupportService {
       to: email,
       html: `Thanks for contacting Cryptoflats!<br><br>We've received your message and will respond as soon as we can.<br><br>Your ticket number is: ${ticket.index}<br><br>- Cryptoflats support team`,
     });
+
+    await this.sendNotificationTelegram(ticket);
 
     return {
       message: 'Ticket created successfully',
@@ -115,5 +120,32 @@ export class SupportService {
 
   public getLastTicket() {
     return this.ticketModel.findOne().sort({ createdAt: -1 }).exec();
+  }
+
+  private async sendNotificationTelegram(ticket: TicketModel) {
+    const BOT_TOKEN = this.configService.get<string>('TELEGRAM_BOT_TOKEN');
+    const CHAT_IDS = this.configService
+      .get<string>('TELEGRAM_CHAT_IDS')
+      .split(',');
+    const BOT_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
+    const message = `New ticket created: ${ticket.index}\nTopic: ${ticket.topic}\nDescription: ${ticket.description}\nAddress: ${ticket.address}\nEmail: ${ticket.email}\n\nClick here to answer: <a href="https://cryptoflats.io/admin">https://cryptoflats.io/admin</a>`;
+
+    for (const chatId of CHAT_IDS) {
+      try {
+        const formData = new FormData();
+        formData.append('chat_id', chatId);
+        formData.append('parse_mode', 'HTML');
+        formData.append('text', message);
+
+        await axios.post(`${BOT_URL}/sendMessage`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      } catch (err) {
+        throw err;
+      }
+    }
   }
 }

@@ -4,6 +4,7 @@ import { SupportController } from './support.controller';
 import { MailModule } from '../mail/mail.module';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { TicketModel } from './tickect.model';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TicketModel } from './tickect.model';
       },
     ]),
     MailModule,
+    ConfigModule,
   ],
   providers: [SupportService],
   controllers: [SupportController],
