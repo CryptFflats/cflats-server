@@ -30,6 +30,11 @@ export class SupportService {
     });
     await ticket.save();
 
+    await this.mailService.sendMail({
+      to: email,
+      html: `Your ticket has been created successfully. Your ticket number is #${ticket.index}`,
+    });
+
     return {
       message: 'Ticket created successfully',
     };
@@ -54,7 +59,7 @@ export class SupportService {
     ticket.answer = answer;
     ticket.status = true;
 
-    await this.mailService.sendMail({
+    await this.mailService.sendAnswerMail({
       to: ticket.email,
       answer,
     });

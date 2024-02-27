@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { IAnswerTickerDto } from './interfaces/IAnswerTickerDto';
+import { IAnswerTickerDto } from './interfaces/IAnswerTicker.dto';
 import * as path from 'path';
 import * as fs from 'fs';
+import { ISendMailDto } from './interfaces/ISendMail.dto';
 
 @Injectable()
 export class MailService {
@@ -10,7 +11,16 @@ export class MailService {
 
   constructor(private readonly mailerService: MailerService) {}
 
-  public async sendMail(dto: IAnswerTickerDto): Promise<void> {
+  public async sendMail(dto: ISendMailDto): Promise<void> {
+    return await this.mailerService.sendMail({
+      to: dto.to,
+      from: this.from,
+      subject: 'Cryptoflats Support: Ticket Created',
+      html: dto.html,
+    });
+  }
+
+  public async sendAnswerMail(dto: IAnswerTickerDto): Promise<void> {
     const htmlPath = path.join(
       __dirname,
       '..',
