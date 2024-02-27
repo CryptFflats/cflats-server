@@ -144,7 +144,7 @@ export class SupportService {
           },
         });
       } catch (err) {
-        throw err;
+        console.error(`Error sending notification to chat ID ${chatId}:`, err);
       }
     }
   }
