@@ -32,7 +32,7 @@ export class SupportService {
 
     await this.mailService.sendMail({
       to: email,
-      html: `Thanks for contacting Cryptoflats! <br> We've received your message and will respond as soon as we can. <br> Your ticket number is: ${ticket.index} <br> - Cryptoflats support team`,
+      html: `Thanks for contacting Cryptoflats!<br><br>We've received your message and will respond as soon as we can.<br><br>Your ticket number is: ${ticket.index}<br><br>- Cryptoflats support team`,
     });
 
     return {
