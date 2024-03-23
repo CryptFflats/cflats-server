@@ -30,14 +30,14 @@ export class WhiteListController {
   @HttpCode(200)
   @Get(':name/:type')
   async getWhiteList(@Param('name') name: string, @Param('type') type: string) {
-   return await this.WhiteListService.getWhiteList(name, type);
+    return await this.WhiteListService.getWhiteList(name, type);
   }
 
-  @HttpCode(200)
+  // @HttpCode(200)
   @Auth()
-  @Delete(':name/:type/:address')
-  async deleteAddressFromWhiteList(@Param('name') name: string, @Param('type') type: string, @Param('address') address: string) {
-    return await this.WhiteListService.deleteAddressFromWhiteList(name, type, address);
+  @Post('/deleteAddresses')
+  async deleteAddressFromWhiteList(@Body() dto: WhiteListDto) {
+    return await this.WhiteListService.deleteAddressFromWhiteList(dto);
   }
 
   @HttpCode(200)

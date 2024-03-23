@@ -44,24 +44,18 @@ export class WhiteListService {
     return whiteList;
   };
 
-  public deleteAddressFromWhiteList = async (
-    name: string,
-    type: string,
-    address: string,
-  ) => {
+  public deleteAddressFromWhiteList = async (dto: WhiteListDto) => {
+    const { name, addresses, type } = dto;
     const whiteList = await this.WhiteListModel.findOne({ name, type });
-
+    
     if (!whiteList) {
       throw new HttpException('White List Not Found', HttpStatus.NOT_FOUND);
     }
 
-    const index = whiteList.addresses.indexOf(address);
-
-    if (index === -1) {
-      throw new BadRequestException('Address Not Found');
-    }
-
-    whiteList.addresses.splice(index, 1);
+    const addressesLowercased = addresses.map((address: string) => address.toLowerCase());
+    whiteList.addresses = whiteList.addresses.filter((element: string) =>
+      !addressesLowercased.includes(element.toLowerCase())
+    );
 
     await whiteList.save();
 
